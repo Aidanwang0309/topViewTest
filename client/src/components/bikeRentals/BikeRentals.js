@@ -163,6 +163,7 @@ const BikeRentals = props => {
             size="large"
             type="primary"
             onClick={() => onSubmit()}
+            disabled={_.isEmpty(selections)}
           >
             Confirm
           </Button>

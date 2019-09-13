@@ -19,6 +19,7 @@ const SelectCard = props => {
   };
 
   const handleClick = (id, type) => {
+    if (value === 0 && type === "minus") return;
     type === "plus" ? setValue(value + 1) : setValue(value - 1);
   };
 
