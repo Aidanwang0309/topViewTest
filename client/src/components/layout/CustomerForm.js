@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import Card from "react-credit-cards";
 import { Form, Field } from "react-final-form";
-import { Row, Col, Divider, Button } from "antd";
+import { Row, Col, Divider } from "antd";
 import {
   formatCreditCardNumber,
   formatCVC,
@@ -9,25 +9,9 @@ import {
 } from "../../utils/cardUtils";
 
 const CustomerForm = props => {
-  //   const [customerInfo, setCustomerInfo] = useState({
-  //     firstName: "",
-  //     lastName: "",
-  //     email: "",
-  //     phone: "",
-  //     cardNumber: "",
-  //     name: "",
-  //     expiry: "",
-  //     cvc: ""
-  //   });
-
-  //   const handleChange = e => {
-  //     setCustomerInfo({ ...customerInfo, [e.target.name]: e.target.value });
-  //   };
-
   const { handleForm, products } = props;
 
   const isDisable = () => {
-    console.log(products.length);
     return products.length === 0;
   };
 
@@ -38,7 +22,7 @@ const CustomerForm = props => {
   return (
     <Form
       onSubmit={onSubmit}
-      render={({ handleSubmit, submitting, values, active }) => {
+      render={({ handleSubmit, values, active }) => {
         return (
           <Row id="customer-form" gutter={40}>
             <form onSubmit={handleSubmit}>
