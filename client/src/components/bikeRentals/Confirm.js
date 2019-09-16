@@ -1,7 +1,8 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import React, { useContext, useRef, Fragment } from "react";
 import BikeRentalsContext from "../../context/bikeRentals/bikeRentalsContext";
 import { Table, Divider, Tag } from "antd";
 import _ from "lodash";
+
 const Confirm = props => {
   const bikeRentalsContext = useContext(BikeRentalsContext);
   const { bikeRentalsData } = bikeRentalsContext;
@@ -16,9 +17,9 @@ const Confirm = props => {
       render: text => <a>{text}</a>
     },
     {
-      title: "Price",
-      dataIndex: "price",
-      key: "price"
+      title: "Type",
+      key: "type",
+      dataIndex: "type"
     },
     {
       title: "Quantity",
@@ -26,45 +27,44 @@ const Confirm = props => {
       key: "quantity"
     },
     {
-      title: "Type",
-      key: "type",
-      dataIndex: "type"
+      title: "Price",
+      dataIndex: "price",
+      key: "price"
     }
   ];
 
   const data = () => {
     let data = [];
     let totalPrice = 0;
-    _.keys(products).map(productId => {
-      const productInfo = _.filter(
-        bikeRentalsData,
-        product => product.id == productId
-      );
+    products.map(product => {
+      const { productId, productName, price, quantity, type } = product;
       const item = {
-        key: productInfo[0].id,
-        name: productInfo[0].name,
-        price: productInfo[0].price,
-        quantity: [products[productId]],
-        type: productInfo[0].product_type
+        key: productId,
+        name: productName,
+        type: type,
+        quantity: quantity,
+        price: price
       };
-      totalPrice = totalPrice + productInfo[0].price * [products[productId]];
+      totalPrice = totalPrice + price * quantity;
       data.push(item);
     });
-    totalRef.current = totalPrice;
+    totalRef.current = Number.parseFloat(totalPrice).toFixed(2);
     return data;
   };
 
   return (
-    <Table
-      style={{ overflow: "hidden" }}
-      columns={columns}
-      dataSource={data()}
-      footer={() => (
-        <div style={{ textAlign: "right" }}>
-          Total Price : {totalRef.current}
-        </div>
-      )}
-    />
+    <Fragment>
+      <Table
+        style={{ overflow: "hidden" }}
+        columns={columns}
+        dataSource={data()}
+        footer={() => (
+          <div style={{ textAlign: "right" }}>
+            Total Price : {totalRef.current}
+          </div>
+        )}
+      />
+    </Fragment>
   );
 };
 

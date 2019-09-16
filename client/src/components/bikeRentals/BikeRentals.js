@@ -6,13 +6,25 @@ import Confirm from "./Confirm";
 import { withRouter } from "react-router-dom";
 // import { Tabs } from "antd";
 import _ from "lodash";
+import uuid from "uuid";
+import CustomerForm from "../layout/CustomerForm";
 
 const BikeRentals = props => {
   const bikeRentalsContext = useContext(BikeRentalsContext);
   const { bikeRentalsData, postSelections } = bikeRentalsContext;
   const [current, setCurrent] = useState(0);
-  const [selections, setSelections] = useState({});
+  const initialOrder = {
+    orderId: "",
+    customerInfo: {},
+    rentalInfo: []
+  };
+  const [order, setOrder] = useState(initialOrder);
+  const [submit, setSubmit] = useState(0);
   const { Step } = Steps;
+
+  useEffect(() => {
+    onSubmit();
+  }, [submit]);
 
   const steps = [
     {
@@ -38,15 +50,45 @@ const BikeRentals = props => {
   };
 
   const onSubmit = () => {
-    postSelections(selections);
-    setSelections({});
-    props.history.push("/success");
+    if (submit === 1) {
+      console.log(order);
+      postSelections(order);
+      setOrder(initialOrder);
+      props.history.push("./success");
+    }
   };
 
-  const handleSelect = (id, value) => {
-    // console.log(id);
-    if (value > 0) setSelections({ ...selections, [id]: value });
-    if (value === 0) setSelections(_.omit(selections, id));
+  const handleForm = values => {
+    setOrder({ ...order, orderId: uuid.v4(), customerInfo: values });
+    setSubmit(1);
+  };
+
+  const handleSelect = (productId, productName, price, type, quantity) => {
+    let Info = order.rentalInfo;
+    if (quantity > 0) {
+      const rentalItem = {
+        productId: productId,
+        productName: productName,
+        price: price,
+        type: type,
+        quantity: quantity
+      };
+      if (!_.find(Info, { productId: productId })) {
+        //if product doesn't exist, then push ro array
+        setOrder({ ...order, rentalInfo: [...order.rentalInfo, rentalItem] });
+      } else {
+        //if product exist, update the product quantity
+        let index = _.findIndex(Info, { productId: productId });
+        Info.splice(index, 1, rentalItem);
+        setOrder({ ...order, rentalInfo: Info });
+      }
+    } else if (quantity === 0) {
+      _.remove(order.rentalInfo, { productId: productId });
+      setOrder({
+        ...order,
+        rentalInfo: order.rentalInfo
+      });
+    }
   };
 
   const renderSwitch = () => {
@@ -124,7 +166,12 @@ const BikeRentals = props => {
           </div>
         );
       case 3:
-        return <Confirm products={selections} />;
+        return (
+          <Fragment>
+            <Confirm products={order.rentalInfo} />
+            <CustomerForm handleForm={handleForm} products={order.rentalInfo} />
+          </Fragment>
+        );
     }
   };
 
@@ -158,15 +205,7 @@ const BikeRentals = props => {
           </Button>
         )}
         {current === steps.length - 1 && (
-          <Button
-            style={{ marginLeft: "2rem" }}
-            size="large"
-            type="primary"
-            onClick={() => onSubmit()}
-            disabled={_.isEmpty(selections)}
-          >
-            Confirm
-          </Button>
+          <span style={{ width: "90px", marginLeft: "2rem" }}></span>
         )}
       </div>
     </div>

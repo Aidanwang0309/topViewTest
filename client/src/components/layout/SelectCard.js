@@ -9,7 +9,7 @@ const SelectCard = props => {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
-    onSelect(id, value);
+    onSelect(id, name, price, product_type, value);
   }, [value]);
 
   const MyIcon = ({ disabled, ...props }) => {
